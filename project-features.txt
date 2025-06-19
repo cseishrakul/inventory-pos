@@ -1,0 +1,21 @@
+1.Category crud
+2.Brand Crud
+3.Get Location Data
+4.Supplier crud
+5.Authentication
+6.Attribute Crud
+7.Attribute value crud
+8.Product Crud
+9.Shop Crud
+10.Sales Manager Crud
+11.Sales Manager authentication
+12.Add to cart
+13.Add Customer
+14.Order Summary
+15.Prepare Order Data
+16.Place Order
+17.Order list and details
+18.bar code generation
+19.Report
+20.Product Details
+21.Bar code scanner
