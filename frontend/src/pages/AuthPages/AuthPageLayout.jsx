@@ -14,14 +14,14 @@ export default function AuthLayout(props) {
             <div className="flex flex-col items-center max-w-xs">
               <Link to="/" className="block mb-4">
                 <img
-                  width={231}
-                  height={48}
-                  src="/images/logo/auth-logo.svg"
+                  width={50}
+                  height={50}
+                  src="/inx.webp"
                   alt="Logo"
                 />
               </Link>
-              <p className="text-center text-gray-400 dark:text-white/60">
-                Free and Open-Source Tailwind CSS Admin Dashboard Template
+              <p className="text-center text-gray-200 dark:text-white/60">
+                Inventaix Inventory management software
               </p>
             </div>
           </div>

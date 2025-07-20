@@ -1,12 +1,61 @@
-import { useState } from "react";
-import { Link } from "react-router";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router";
+import { FaEye, FaEyeSlash, FaFacebook, FaGoogle } from "react-icons/fa";
 import { IoChevronBack } from "react-icons/io5";
 import Label from "../form/Label";
+import axios from "axios";
+import { CiWarning } from "react-icons/ci";
+import { FaSpinner } from "react-icons/fa";
+import { laravel_base_url, react_base_url } from "../../router/http";
+
 
 export default function SignInForm() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+  const [input, setInput] = useState({});
+  const [errors, setErrors] = useState([]);
+  const [generalError, setGeneralError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleInput = (e) => {
+    setInput((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+    // console.log(input);
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    axios
+      .post(laravel_base_url + 'login', input)
+      .then((res) => {
+        // console.log(res.data);
+        localStorage.email = res.data.email;
+        localStorage.name = res.data.name;
+        localStorage.photo = res.data.photo;
+        localStorage.phone = res.data.phone;
+        localStorage.token = res.data.token;
+        window.location.href = react_base_url;
+      })
+      .catch((errors) => {
+        if (errors.response.status === 422) {
+          setErrors(errors.response.data.errors || {});
+          const message = errors.response.data.message;
+          if (message === "The provided creadentials are incorrect!") {
+            setGeneralError(message);
+            setErrors("");
+          } else {
+            setGeneralError("");
+          }
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   return (
     <div className="flex flex-col flex-1">
@@ -33,30 +82,13 @@ export default function SignInForm() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-5">
             <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
               {/* Google Icon */}
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 20 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {/* ...SVG paths... */}
-              </svg>
+              <FaGoogle />
               Sign in with Google
             </button>
-            <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-7 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
-              {/* X (Twitter) Icon */}
-              <svg
-                width="21"
-                className="fill-current"
-                height="20"
-                viewBox="0 0 21 20"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {/* ...SVG path... */}
-              </svg>
-              Sign in with X
+            <button className="inline-flex items-center justify-center gap-3 py-3 text-sm font-normal text-gray-700 transition-colors bg-gray-100 rounded-lg px-5 hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10">
+              {/* Facebook) Icon */}
+              <FaFacebook />
+              Sign in with Facebook
             </button>
           </div>
 
@@ -70,8 +102,14 @@ export default function SignInForm() {
               </span>
             </div>
           </div>
+          {generalError && (
+            <div className="mb-4 p-3 rounded-md bg-red-100 border border-red-300 text-red-700 text-sm font-medium flex items-center gap-2">
+              <CiWarning className="text-lg" />
+              {generalError}
+            </div>
+          )}
 
-          <form>
+          <form onSubmit={handleLogin}>
             <div className="space-y-6">
               <div>
                 <Label>
@@ -79,9 +117,18 @@ export default function SignInForm() {
                 </Label>
                 <input
                   type="email"
+                  name="email"
                   placeholder="info@gmail.com"
                   className="w-full px-4 py-2 text-sm border rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                  value={input.email}
+                  onChange={handleInput}
                 />
+                {errors.email && (
+                  <p className="mt-2 text-sm text-red-500 font-medium flex items-center gap-1">
+                    <CiWarning />
+                    {errors.email[0]}
+                  </p>
+                )}
               </div>
               <div>
                 <Label>
@@ -90,8 +137,11 @@ export default function SignInForm() {
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={input.password}
                     placeholder="Enter your password"
                     className="w-full px-4 py-2 text-sm border rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                    onChange={handleInput}
                   />
                   <span
                     onClick={() => setShowPassword(!showPassword)}
@@ -104,6 +154,13 @@ export default function SignInForm() {
                     )}
                   </span>
                 </div>
+
+                {errors.password && (
+                  <p className="mt-2 text-sm text-red-500 font-medium flex items-center gap-1">
+                    <CiWarning />
+                    {errors.password[0]}
+                  </p>
+                )}
               </div>
 
               <div className="flex items-center justify-between">
@@ -133,9 +190,16 @@ export default function SignInForm() {
               <div>
                 <button
                   type="submit"
-                  className="w-full px-4 py-2 text-sm font-semibold text-white bg-brand-500 hover:bg-brand-600 rounded-lg transition"
+                  className="w-full px-4 py-2 text-sm font-semibold text-white bg-brand-500 hover:bg-brand-600 rounded-lg transition flex justify-center items-center gap-2"
+                  disabled={loading}
                 >
-                  Sign in
+                  {loading ? (
+                    <>
+                      <FaSpinner className="animate-spin" /> Signing in...
+                    </>
+                  ) : (
+                    "Sign in"
+                  )}
                 </button>
               </div>
             </div>

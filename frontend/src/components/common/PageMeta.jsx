@@ -1,14 +1,15 @@
-import { HelmetProvider, Helmet } from "react-helmet-async";
+import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 
-const PageMeta = ({ title, description }) => (
-  <Helmet>
-    <title> {title} </title>
-    <meta name="description" content={description} />
-  </Helmet>
-);
+const PageMeta = ({ title, description }) => {
+  const location = useLocation();
 
-export const AppWrapper = ({ children }) => (
-  <HelmetProvider> {children} </HelmetProvider>
-);
+  return (
+    <Helmet key={`${location.pathname}-${title}`}>
+      <title>{title}</title>
+      <meta name="description" content={description} />
+    </Helmet>
+  );
+};
 
 export default PageMeta;

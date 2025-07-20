@@ -6,12 +6,44 @@ import { IoIosArrowDown } from "react-icons/io";
 import { FiUser } from "react-icons/fi";
 import { CiSettings, CiCircleAlert } from "react-icons/ci";
 import { HiOutlineLogout } from "react-icons/hi";
+import Swal from "sweetalert2";
+import axios from "axios";
+import { laravel_base_url, react_base_url } from "../../router/http";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
   const closeDropdown = () => setIsOpen(false);
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out from admin panel!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Logout!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        axios
+          .post(laravel_base_url + "logout")
+          .then((res) => {
+            localStorage.removeItem("email");
+            localStorage.removeItem("name");
+            localStorage.removeItem("photo");
+            localStorage.removeItem("phone");
+            localStorage.removeItem("token");
+            window.location.href = react_base_url;
+          })
+          .catch((errors) => {
+            // handle error if needed
+            console.error(errors);
+          });
+      }
+    });
+  };
 
   return (
     <div className="relative">
@@ -83,13 +115,13 @@ export default function UserDropdown() {
         </ul>
 
         {/* Logout */}
-        <Link
-          to="/signin"
+        <button
+          onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
         >
           <HiOutlineLogout className="w-5 h-5 p-1 border border-gray-400 rounded-full text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-white" />
           Sign out
-        </Link>
+        </button>
       </Dropdown>
     </div>
   );
