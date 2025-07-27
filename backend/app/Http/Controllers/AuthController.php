@@ -19,6 +19,7 @@ class AuthController extends Controller
             $user_data['phone'] = $user->phone;
             $user_data['photo'] = $user->photo;
             $user_data['email'] = $user->email;
+            $user_data['role_id'] = $user->role_id;
 
             return response()->json($user_data);
         }

@@ -54,7 +54,10 @@ export default function UserDropdown() {
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
           <img src="/images/user/owner.jpg" alt="User" />
         </span>
-        <span className="block mr-1 font-medium text-theme-sm">Musharof</span>
+        <span className="block mr-1 font-medium text-theme-sm">
+          {" "}
+          {localStorage.name != undefined ? localStorage.name : null}{" "}
+        </span>
         <IoIosArrowDown
           className={`w-5 h-5 text-gray-500 dark:text-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -70,10 +73,10 @@ export default function UserDropdown() {
         {/* User Info */}
         <div>
           <span className="block font-medium text-gray-700 text-theme-sm dark:text-gray-400">
-            Musharof Chowdhury
+            {localStorage.name != undefined ? localStorage.name : null}{" "}
           </span>
-          <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-            randomuser@pimjo.com
+          <span className="mt-0.5 block text-theme-md text-gray-500 dark:text-gray-400">
+            {localStorage.email != undefined ? localStorage.email : null}{" "}
           </span>
         </div>
 
