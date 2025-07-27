@@ -7,6 +7,11 @@ layer(base);
   font-family: 'Outfit', sans-serif;
 }
 
+.custom-swal-zindex {
+  z-index: 9999 !important;
+  margin-top: 70px;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme {
