@@ -2,6 +2,11 @@ import React, { useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
 import { Link } from "react-router";
+import axios from "axios";
+import { laravel_base_url, react_base_url } from "../../router/http";
+import { FaSpinner } from "react-icons/fa";
+import { CiWarning } from "react-icons/ci";
+import Swal from 'sweetalert2'
 
 const AddCategory = () => {
   const [input, setInput] = useState({});
@@ -40,7 +45,29 @@ const AddCategory = () => {
 
   const handleCategoryCreate = (e) => {
     e.preventDefault();
-    console.log(input);
+    setLoading(true);
+    axios
+      .post(laravel_base_url + "category", input)
+      .then((res) => {
+        setLoading(false);
+        Swal.fire({
+          position:'top-end',
+          icon:res.data.cls,
+          title:res.data.msg,
+          showConfirmButton:false,
+          toast:true,
+          timer:1500,
+          customClass:{
+            popup:'custom-swal-zindex'
+          }
+        });
+      })
+      .catch((errors) => {
+        setLoading(false);
+        if (errors.response.status == 422) {
+          setErrors(errors.response.data.errors);
+        }
+      });
   };
 
   return (
@@ -145,7 +172,7 @@ const AddCategory = () => {
                 onChange={handleInput}
                 className="w-full px-4 py-2 border border-grey-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option disabled={true}>Select Status</option>
+                <option>Select Status</option>
                 <option value="1">Active</option>
                 <option value="0">Inactive</option>
               </select>
@@ -210,12 +237,26 @@ const AddCategory = () => {
               )}
             </div>
           </div>
-          <div className="flex justify-center mt-10">
+          <div className="flex justify-center mt-6">
             <button
               onClick={handleCategoryCreate}
-              className="w-1/2 justify-center border-2 border-indigo-500 rounded-lg py-2 hover:bg-indigo-500 hover:text-white"
+              disabled={loading}
+              className={`w-1/2 flex items-center justify-center gap-2 border-2 border-indigo-500 rounded-lg py-2 px-4 text-indigo-600 font-semibold transition duration-200 ease-in-out
+      ${
+        loading
+          ? "cursor-not-allowed"
+          : "hover:bg-indigo-500 hover:text-white"
+      }
+    `}
             >
-              Add Category
+              {loading ? (
+                <>
+                  <FaSpinner className="animate-spin" />
+                  Adding Category...
+                </>
+              ) : (
+                "Add Category"
+              )}
             </button>
           </div>
         </form>
