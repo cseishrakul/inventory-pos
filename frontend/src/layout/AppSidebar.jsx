@@ -27,9 +27,12 @@ const navItems = [
   { icon: <FiCalendar />, name: "Calendar", path: "/calendar" },
   { icon: <FiUser />, name: "User Profile", path: "/profile" },
   {
-    name: "Forms",
+    name: "Categories",
     icon: <FiList />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+    subItems: [
+      { name: "Add Category", path: "/add-category", pro: false },
+      { name: "All Category", path: "/all-category", pro: false },
+    ],
   },
   {
     name: "Tables",
