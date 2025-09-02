@@ -15,6 +15,7 @@ import Error500 from "../pages/ErrorPages/Error500";
 import Error401 from "../pages/ErrorPages/Error401";
 import AddCategory from "../pages/category/AddCategory";
 import AllCategory from "../pages/category/AllCategory";
+import EditCategory from "../pages/category/EditCategory";
 
 const ProtectedRouter = () => (
   <Routes>
@@ -33,6 +34,7 @@ const ProtectedRouter = () => (
       <Route path="/error-401" element={<Error401 />} />
       <Route path="/add-category" element={<AddCategory />} />
       <Route path="/all-category" element={<AllCategory />} />
+      <Route path="/edit-category/:id" element={<EditCategory />} />
     </Route>
     <Route path="*" element={<NotFound />} />
   </Routes>
