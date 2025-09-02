@@ -10,6 +10,7 @@ import { Link } from "react-router";
 import { FaEdit, FaEye, FaSearch, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 import Loader from "../../components/loader/Loader";
+import NoDataFound from "../../components/no-data/NoDataFound";
 
 const AllCategory = () => {
   const [categories, setCategories] = useState([]);
@@ -200,65 +201,67 @@ const AllCategory = () => {
               </tbody>
             ) : (
               <tbody>
-                {categories.map((category, index) => (
-                  <tr
-                    key={category.id}
-                    className="border-t hover:bg-gray-50 transition"
-                  >
-                    <td className="py-3 px-4">{startFrom + index}</td>
-                    <td className="py-3 px-4">
-                      <CategoryPhotoModal
-                        photo={category.photo}
-                        photoFull={category.photo_full}
-                        heading={category.name}
-                      />
-                    </td>
-                    <td className="py-3 px-4">{category.name}</td>
-                    <td className="py-3 px-4">
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          category.status === "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
+                {Object.keys(categories).length > 0
+                  ? categories.map((category, index) => (
+                      <tr
+                        key={category.id}
+                        className="border-t hover:bg-gray-50 transition"
                       >
-                        {category.status}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4">{category.created_by}</td>
-                    <td className="py-3 px-4">
-                      {category.updated_at === "Not Updated Yet"
-                        ? category.created_at
-                        : category.updated_at}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-2 justify-center">
-                        {/* View */}
-                        <button
-                          onClick={() => setSelectedCategory(category)}
-                          className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition"
-                        >
-                          <FaEye />
-                        </button>
+                        <td className="py-3 px-4">{startFrom + index}</td>
+                        <td className="py-3 px-4">
+                          <CategoryPhotoModal
+                            photo={category.photo}
+                            photoFull={category.photo_full}
+                            heading={category.name}
+                          />
+                        </td>
+                        <td className="py-3 px-4">{category.name}</td>
+                        <td className="py-3 px-4">
+                          <span
+                            className={`px-2 py-1 rounded text-xs font-medium ${
+                              category.status === "Active"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-red-100 text-red-700"
+                            }`}
+                          >
+                            {category.status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">{category.created_by}</td>
+                        <td className="py-3 px-4">
+                          {category.updated_at === "Not Updated Yet"
+                            ? category.created_at
+                            : category.updated_at}
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-2 justify-center">
+                            {/* View */}
+                            <button
+                              onClick={() => setSelectedCategory(category)}
+                              className="p-2 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition"
+                            >
+                              <FaEye />
+                            </button>
 
-                        {/* Edit */}
-                        <Link>
-                          <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition">
-                            <FaEdit />
-                          </button>
-                        </Link>
+                            {/* Edit */}
+                            <Link to={`/edit-category/${category.id}`}>
+                              <button className="p-2 rounded-full bg-green-100 text-green-600 hover:bg-green-200 transition">
+                                <FaEdit />
+                              </button>
+                            </Link>
 
-                        {/* Delete */}
-                        <button
-                          onClick={() => handleCategoryDelete(category.id)}
-                          className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition"
-                        >
-                          <FaTrash />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                            {/* Delete */}
+                            <button
+                              onClick={() => handleCategoryDelete(category.id)}
+                              className="p-2 rounded-full bg-red-100 text-red-600 hover:bg-red-200 transition"
+                            >
+                              <FaTrash />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  : <NoDataFound />}
               </tbody>
             )}
           </table>

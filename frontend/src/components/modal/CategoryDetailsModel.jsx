@@ -9,7 +9,7 @@ export default function CategoryDetailsModel({ category, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg shadow-lg p-6 max-w-[850px] w-full relative"
+        className="bg-white rounded-lg shadow-lg p-6 max-w-[750px] w-full relative"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex gap-10">
