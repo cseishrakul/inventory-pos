@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryEditResource;
 use App\Http\Resources\CategoryListResource;
 use App\Manager\ImageUploadManager;
 use Illuminate\Http\Request;
@@ -39,16 +40,7 @@ class CategoryController extends Controller
         $category['user_id'] = auth()->id();
         if ($request->has('image')) {
             $file = $request->input('image');
-            $width = 800;
-            $height = 800;
-            $width_thumb = 150;
-            $height_thumb = 150;
-            $name = Str::slug($request->input('slug'));
-            $path = Category::IMAGE_UPLOAD_PATH;
-            $path_thumb = Category::THUMB_IMAGE_UPLOAD_PATH;
-            $category['image'] = ImageUploadManager::uploadImage($name, $width, $height, $path, $file);
-
-            ImageUploadManager::uploadImage($name, $width_thumb, $height_thumb, $path_thumb, $file);
+            $category['image'] = $this->processImageUpload($file,$category['slug']);
         }
 
         (new Category())->storeCategory($category);
@@ -60,7 +52,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
+        return new CategoryEditResource($category);
     }
 
     /**
@@ -76,7 +68,14 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+        $category_data = $request->except('image');
+        $category_data['slug'] = Str::slug($request->input('slug'));
+        if ($request->has('image')) {
+            $category_data['image'] = $this->processImageUpload($request->input('image'),$category_data['slug'],$category->photo);
+        }
+
+        $category->update($category_data);
+        return response()->json(['msg' => 'Category Created Successfully!', 'cls' => 'success']);
     }
 
     /**
@@ -84,12 +83,33 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        if(!empty($category->image)){
-            ImageUploadManager::deletePhoto(Category::IMAGE_UPLOAD_PATH,$category->image);
-            ImageUploadManager::deletePhoto(Category::THUMB_IMAGE_UPLOAD_PATH,$category->image);
+        if (!empty($category->image)) {
+            ImageUploadManager::deletePhoto(Category::IMAGE_UPLOAD_PATH, $category->image);
+            ImageUploadManager::deletePhoto(Category::THUMB_IMAGE_UPLOAD_PATH, $category->image);
         }
 
         $category->delete();
-        return response()->json(['msg' => 'Category Deleted Successfully!','cls' => 'warning']);
+        return response()->json(['msg' => 'Category Deleted Successfully!', 'cls' => 'warning']);
+    }
+
+    private function processImageUpload(string $file, string $name, string|null $existing_photo = null)
+    {
+        $width = 800;
+        $height = 800;
+        $width_thumb = 150;
+        $height_thumb = 150;
+        $path = Category::IMAGE_UPLOAD_PATH;
+        $path_thumb = Category::THUMB_IMAGE_UPLOAD_PATH;
+
+        if (!empty($existing_photo)) {
+            ImageUploadManager::deletePhoto(Category::IMAGE_UPLOAD_PATH, $existing_photo);
+            ImageUploadManager::deletePhoto(Category::THUMB_IMAGE_UPLOAD_PATH, $existing_photo);
+        }
+
+        $photo_name = ImageUploadManager::uploadImage($name, $width, $height, $path, $file);
+
+        ImageUploadManager::uploadImage($name, $width_thumb, $height_thumb, $path_thumb, $file);
+
+        return $photo_name;
     }
 }
