@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryListResource;
 use App\Manager\ImageUploadManager;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
@@ -13,9 +15,10 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $categories = (new Category())->getAllCategories($request->all());
+        return CategoryListResource::collection($categories);
     }
 
     /**
@@ -41,8 +44,8 @@ class CategoryController extends Controller
             $width_thumb = 150;
             $height_thumb = 150;
             $name = Str::slug($request->input('slug'));
-            $path = 'images/uploads/category/';
-            $path_thumb = 'images/uploads/category_thumb/';
+            $path = Category::IMAGE_UPLOAD_PATH;
+            $path_thumb = Category::THUMB_IMAGE_UPLOAD_PATH;
             $category['image'] = ImageUploadManager::uploadImage($name, $width, $height, $path, $file);
 
             ImageUploadManager::uploadImage($name, $width_thumb, $height_thumb, $path_thumb, $file);
@@ -81,6 +84,12 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        if(!empty($category->image)){
+            ImageUploadManager::deletePhoto(Category::IMAGE_UPLOAD_PATH,$category->image);
+            ImageUploadManager::deletePhoto(Category::THUMB_IMAGE_UPLOAD_PATH,$category->image);
+        }
+
+        $category->delete();
+        return response()->json(['msg' => 'Category Deleted Successfully!','cls' => 'warning']);
     }
 }
