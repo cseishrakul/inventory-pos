@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import axios from "axios";
 import { laravel_base_url, react_base_url } from "../../router/http";
 import { FaSpinner } from "react-icons/fa";
@@ -13,6 +13,7 @@ const AddCategory = () => {
   const [errors, setErrors] = useState([]);
   const [generalError, setGeneralError] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigator = useNavigate();
 
   const handleInput = (e) => {
     if (e.target.name == "name") {
@@ -61,6 +62,8 @@ const AddCategory = () => {
             popup:'custom-swal-zindex'
           }
         });
+        navigator('/all-category');
+
       })
       .catch((errors) => {
         setLoading(false);
