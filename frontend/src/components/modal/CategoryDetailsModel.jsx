@@ -29,6 +29,9 @@ export default function CategoryDetailsModel({ category, onClose }) {
         {/* Header */}
         <h2 className="text-2xl font-semibold mb-4">{category.name}</h2>
             <p>
+              <strong>Category:</strong> {category.category_name}
+            </p>
+            <p>
               <strong>Slug:</strong> {category.slug}
             </p>
             <p>

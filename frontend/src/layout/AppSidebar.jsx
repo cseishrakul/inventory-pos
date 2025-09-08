@@ -32,6 +32,8 @@ const navItems = [
     subItems: [
       { name: "Add Category", path: "/add-category", pro: false },
       { name: "All Category", path: "/all-category", pro: false },
+      { name: "Add Sub Category", path: "/add-sub-category", pro: false },
+      { name: "All Sub Category", path: "/all-sub-category", pro: false },
     ],
   },
   {

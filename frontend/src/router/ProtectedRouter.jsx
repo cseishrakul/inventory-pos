@@ -16,6 +16,9 @@ import Error401 from "../pages/ErrorPages/Error401";
 import AddCategory from "../pages/category/AddCategory";
 import AllCategory from "../pages/category/AllCategory";
 import EditCategory from "../pages/category/EditCategory";
+import AddSubCategory from "../pages/category/subCategory/addSubCategory";
+import AllSubCategory from "../pages/category/subCategory/AllSubCategory";
+import EditSubCategory from "../pages/category/subCategory/EditSubCategory";
 
 const ProtectedRouter = () => (
   <Routes>
@@ -32,9 +35,16 @@ const ProtectedRouter = () => (
       <Route path="/bar-chart" element={<BarChart />} />
       <Route path="/error-500" element={<Error500 />} />
       <Route path="/error-401" element={<Error401 />} />
+
+      {/* Category */}
       <Route path="/add-category" element={<AddCategory />} />
       <Route path="/all-category" element={<AllCategory />} />
       <Route path="/edit-category/:id" element={<EditCategory />} />
+
+      {/* Sub Category */}
+      <Route path="/add-sub-category" element={<AddSubCategory />} />
+      <Route path="/all-sub-category" element={<AllSubCategory />} />
+      <Route path="/edit-sub-category/:id" element={<EditSubCategory />} />
     </Route>
     <Route path="*" element={<NotFound />} />
   </Routes>

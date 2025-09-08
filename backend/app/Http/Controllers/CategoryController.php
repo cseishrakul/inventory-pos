@@ -75,7 +75,7 @@ class CategoryController extends Controller
         }
 
         $category->update($category_data);
-        return response()->json(['msg' => 'Category Created Successfully!', 'cls' => 'success']);
+        return response()->json(['msg' => 'Category Updated Successfully!', 'cls' => 'success']);
     }
 
     /**
@@ -111,5 +111,12 @@ class CategoryController extends Controller
         ImageUploadManager::uploadImage($name, $width_thumb, $height_thumb, $path_thumb, $file);
 
         return $photo_name;
+    }
+
+
+    // For get categories lists
+    public function get_category_list(){
+        $categories = (new Category())->getCategoryIdAndName();
+        return response()->json($categories);
     }
 }
