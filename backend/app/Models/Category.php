@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
+    use HasFactory;
+    
     public const IMAGE_UPLOAD_PATH = 'images/uploads/category/';
     public const THUMB_IMAGE_UPLOAD_PATH = 'images/uploads/category_thumb/';
 
-    use HasFactory;
 
     protected $fillable = ['name', 'slug', 'serial', 'status', 'description', 'image', 'user_id'];
 
@@ -33,6 +34,10 @@ class Category extends Model
         }
 
         return $query->with('user:id,name')->orderBy('serial', 'asc')->paginate($per_page);
+    }
+
+    final public function getCategoryIdAndName(){
+        return self::query()->select('id','name')->get();
     }
 
     public function user()

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
-import PageMeta from "../../components/common/PageMeta";
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
+import PageMeta from "../../../components/common/PageMeta";
+import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import { Link, useNavigate, useParams } from "react-router";
 import axios from "axios";
-import { laravel_base_url } from "../../router/http";
+import { laravel_base_url } from "../../../router/http";
 import { FaSpinner } from "react-icons/fa";
 import { CiWarning } from "react-icons/ci";
 import { MdToggleOn, MdToggleOff } from "react-icons/md";
 import Swal from "sweetalert2";
 
-const EditCategory = () => {
+const EditSubCategory = () => {
   const params = useParams();
   const navigator = useNavigate();
 
@@ -19,11 +19,18 @@ const EditCategory = () => {
     serial: "",
     description: "",
     image: "",
-    status: "0", // default inactive
+    status: "0",
   });
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  const getCategories = () => {
+    axios.get(laravel_base_url + "get-category-list").then((res) => {
+      setCategories(res.data);
+    });
+  };
 
   // ✅ Handle input changes
   const handleInput = (e) => {
@@ -66,8 +73,8 @@ const EditCategory = () => {
   };
 
   // ✅ Get category data
-  const getCategory = () => {
-    axios.get(laravel_base_url + `category/${params.id}`).then((res) => {
+  const getSubCategory = () => {
+    axios.get(laravel_base_url + `sub-category/${params.id}`).then((res) => {
       setInput({
         ...res.data.data,
         status: res.data.data.status?.toString() || "0",
@@ -76,11 +83,11 @@ const EditCategory = () => {
   };
 
   // ✅ Submit update
-  const handleCategoryUpdate = (e) => {
+  const handleSubCategoryUpdate = (e) => {
     e.preventDefault();
     setLoading(true);
     axios
-      .put(laravel_base_url + `category/${params.id}`, input)
+      .put(laravel_base_url + `sub-category/${params.id}`, input)
       .then((res) => {
         setLoading(false);
         Swal.fire({
@@ -94,7 +101,7 @@ const EditCategory = () => {
             popup: "custom-swal-zindex",
           },
         });
-        navigator("/all-category");
+        navigator("/all-sub-category");
       })
       .catch((errors) => {
         setLoading(false);
@@ -105,30 +112,31 @@ const EditCategory = () => {
   };
 
   useEffect(() => {
-    getCategory();
+    getCategories();
+    getSubCategory();
   }, []);
 
   return (
     <>
       <PageMeta
-        title="Edit Category | Dashboard"
-        description="This is Edit category of inventaix company"
+        title="Edit Sub Category | Dashboard"
+        description="This is Edit Sub Category of inventaix company"
       />
-      <PageBreadcrumb pageTitle={"Edit Category"} />
+      <PageBreadcrumb pageTitle={"Edit Sub Category"} />
 
       <div className="border-2 border-indigo-500 rounded-lg p-10">
         <div className="flex items-center justify-between">
-          <h5 className="text-xl font-semibold">Edit Category</h5>
+          <h5 className="text-xl font-semibold">Edit Sub Category</h5>
           <Link
-            to="/all-category"
+            to="/all-sub-category"
             className="text-indigo-800 outline-2 outline-indigo-500 p-1 px-2 rounded-md hover:bg-indigo-500 hover:text-white"
           >
-            Show Category
+            Show Sub Category
           </Link>
         </div>
         <hr className="mt-5 border border-indigo-300" />
 
-        <form onSubmit={handleCategoryUpdate}>
+        <form onSubmit={handleSubCategoryUpdate}>
           <div className="flex gap-10">
             {/* Name */}
             <div className="my-5 w-1/2">
@@ -140,7 +148,7 @@ const EditCategory = () => {
                 name="name"
                 value={input.name}
                 onChange={handleInput}
-                placeholder="Enter Category Name"
+                placeholder="Enter Sub Category Name"
                 className="w-full px-4 py-2 border border-grey-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               {errors.name && (
@@ -172,8 +180,39 @@ const EditCategory = () => {
           </div>
 
           <div className="flex gap-10">
+            <div className="mb-5 w-1/3">
+              <label
+                htmlFor="category_id"
+                className="block text-md font-medium text-gray-700 mb-1"
+              >
+                Select Category
+              </label>
+              <select
+                name="category_id"
+                id="category_id"
+                value={input.category_id}
+                onChange={handleInput}
+                className={`w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  errors.category_id ? "border-red-500" : "border-gray-300"
+                }`}
+              >
+                <option value="null">Select Category</option>
+                {categories.map((category, index) => (
+                  <option value={category.id} key={index}>
+                    {" "}
+                    {category.name}{" "}
+                  </option>
+                ))}
+              </select>
+
+              {errors.category_id && (
+                <p className="mt-2 text-sm text-red-500 font-medium flex items-center gap-1">
+                  <CiWarning /> {errors.category_id[0]}
+                </p>
+              )}
+            </div>
             {/* Serial */}
-            <div className="mb-5 w-1/2">
+            <div className="mb-5 w-1/3">
               <label className="block text-md font-medium text-gray-700 mb-1">
                 Serial:
               </label>
@@ -182,7 +221,7 @@ const EditCategory = () => {
                 name="serial"
                 value={input.serial}
                 onChange={handleInput}
-                placeholder="Enter Category Serial"
+                placeholder="Enter Sub Category Serial"
                 className="w-full px-4 py-2 border border-grey-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               {errors.serial && (
@@ -193,7 +232,7 @@ const EditCategory = () => {
             </div>
 
             {/* Status Toggle */}
-            <div className="mb-5 w-1/2">
+            <div className="mb-5 w-1/3">
               <label className="block text-md font-medium text-gray-700 mb-2">
                 Status:
               </label>
@@ -236,7 +275,7 @@ const EditCategory = () => {
                 name="description"
                 value={input.description}
                 onChange={handleInput}
-                placeholder="Enter Category Description"
+                placeholder="Enter Sub Category Description"
                 className="w-full px-4 py-2 border border-grey-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               {errors.description && (
@@ -289,10 +328,11 @@ const EditCategory = () => {
             >
               {loading ? (
                 <>
-                  <FaSpinner className="animate-spin" /> Updating Category...
+                  <FaSpinner className="animate-spin" /> Updating Sub
+                  Category...
                 </>
               ) : (
-                "Update Category"
+                "Update Sub Category"
               )}
             </button>
           </div>
@@ -302,4 +342,4 @@ const EditCategory = () => {
   );
 };
 
-export default EditCategory;
+export default EditSubCategory;

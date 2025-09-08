@@ -1,22 +1,29 @@
-import React, { useState } from "react";
-import PageMeta from "../../components/common/PageMeta";
-import PageBreadcrumb from "../../components/common/PageBreadCrumb";
+import React, { useEffect, useState } from "react";
+import PageMeta from "../../../components/common/PageMeta";
+import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
 import { Link, useNavigate } from "react-router";
 import axios from "axios";
-import { laravel_base_url, react_base_url } from "../../router/http";
+import { laravel_base_url, react_base_url } from "../../../router/http";
 import { FaSpinner } from "react-icons/fa";
 import { CiWarning } from "react-icons/ci";
 import Swal from "sweetalert2";
 
 import { MdToggleOn, MdToggleOff } from "react-icons/md";
 
-const AddCategory = ({ value, onChange }) => {
+const AddSubCategory = ({ value, onChange }) => {
   const [input, setInput] = useState({ status: "0" });
   const [status, setStatus] = useState("0");
   const [errors, setErrors] = useState([]);
   const [generalError, setGeneralError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigator = useNavigate();
+  const [categories, setCategories] = useState([]);
+
+  const getCategories = () => {
+    axios.get(laravel_base_url + "get-category-list").then((res) => {
+      setCategories(res.data);
+    });
+  };
 
   const handleToggle = () => {
     const newStatus = status === "1" ? "0" : "1";
@@ -27,6 +34,7 @@ const AddCategory = ({ value, onChange }) => {
       status: newStatus,
     }));
   };
+
   const handleInput = (e) => {
     if (e.target.name == "name") {
       let slug = e.target.value;
@@ -56,11 +64,11 @@ const AddCategory = ({ value, onChange }) => {
     }
   };
 
-  const handleCategoryCreate = (e) => {
+  const handleSubCategoryCreate = (e) => {
     e.preventDefault();
     setLoading(true);
     axios
-      .post(laravel_base_url + "category", input)
+      .post(laravel_base_url + "sub-category", input)
       .then((res) => {
         setLoading(false);
         Swal.fire({
@@ -74,7 +82,7 @@ const AddCategory = ({ value, onChange }) => {
             popup: "custom-swal-zindex",
           },
         });
-        navigator("/all-category");
+        navigator("/all-sub-category");
       })
       .catch((errors) => {
         setLoading(false);
@@ -84,21 +92,25 @@ const AddCategory = ({ value, onChange }) => {
       });
   };
 
+  useEffect(() => {
+    getCategories();
+  }, []);
+
   return (
     <>
       <PageMeta
-        title="Add Category | Dashboard"
-        description="This is add category of inventaix company"
+        title="Add Sub Category | Dashboard"
+        description="This is add subcategory of inventaix company"
       />
-      <PageBreadcrumb pageTitle={"Add Category"} />
+      <PageBreadcrumb pageTitle={"Add Sub Category"} />
       <div className="border-2 border-indigo-500 rounded-lg p-10">
         <div className="flex items-center justify-between">
-          <h5 className="text-xl font-semibold">Add Category</h5>
+          <h5 className="text-xl font-semibold">Add Sub Category</h5>
           <Link
-            to="/all-category"
+            to="/all-sub-category"
             className="text-indigo-800 outline-2 outline-indigo-500 p-1 px-2 rounded-md hover:bg-indigo-500 hover:text-white"
           >
-            Show Category
+            Show Sub Categories
           </Link>
         </div>
         <hr className="mt-5 border border-indigo-300" />
@@ -117,7 +129,7 @@ const AddCategory = ({ value, onChange }) => {
                 name="name"
                 value={input.name}
                 onChange={handleInput}
-                placeholder="Enter Category Name"
+                placeholder="Enter Sub Category Name"
                 className="w-full px-4 py-2 border border-grey-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               {errors.name && (
@@ -151,7 +163,39 @@ const AddCategory = ({ value, onChange }) => {
             </div>
           </div>
           <div className="flex gap-10">
-            <div className="mb-5 w-1/2">
+            <div className="mb-5 w-1/3">
+              <label
+                htmlFor="category_id"
+                className="block text-md font-medium text-gray-700 mb-1"
+              >
+                Select Category
+              </label>
+              <select
+                name="category_id"
+                id="category_id"
+                value={input.category_id}
+                onChange={handleInput}
+                className={`w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+                  errors.category_id ? "border-red-500" : "border-gray-300"
+                }`}
+              >
+                <option value="null">Select Category</option>
+                {categories.map((category, index) => (
+                  <option value={category.id} key={index}>
+                    {" "}
+                    {category.name}{" "}
+                  </option>
+                ))}
+              </select>
+
+              {errors.category_id && (
+                <p className="mt-2 text-sm text-red-500 font-medium flex items-center gap-1">
+                  <CiWarning /> {errors.category_id[0]}
+                </p>
+              )}
+            </div>
+
+            <div className="mb-5 w-1/3">
               <label
                 htmlFor=""
                 className="block text-md font-medium text-gray-700 mb-1"
@@ -163,7 +207,7 @@ const AddCategory = ({ value, onChange }) => {
                 name="serial"
                 value={input.serial}
                 onChange={handleInput}
-                placeholder="Enter Category Serial"
+                placeholder="Enter Sub Category Serial"
                 className="w-full px-4 py-2 border border-grey-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               {errors.serial && (
@@ -173,30 +217,14 @@ const AddCategory = ({ value, onChange }) => {
                 </p>
               )}
             </div>
-            <div className="mb-5 w-1/2">
+            <div className="mb-5 w-1/3">
               <label
                 htmlFor=""
                 className="block text-md font-medium text-gray-700 mb-1"
               >
                 Status:{" "}
               </label>
-              {/* 
-              <select
-                name="status"
-                value={input.status}
-                onChange={handleInput}
-                className="w-full px-4 py-2 border border-grey-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option>Select Status</option>
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
-              </select>
-              {errors.status && (
-                <p className="mt-2 text-sm text-red-500 font-medium flex items-center gap-1">
-                  <CiWarning />
-                  {errors.status[0]}
-                </p>
-              )} */}
+
               <button
                 type="button"
                 onClick={() =>
@@ -206,12 +234,12 @@ const AddCategory = ({ value, onChange }) => {
                   }))
                 }
                 className={`flex items-center gap-2 py-1 px-4 rounded-lg shadow-sm transition
-                  ${
-                    input.status === "1"
-                      ? "bg-green-100 text-green-600"
-                      : "bg-red-100 text-red-600"
-                  }
-                `}
+    ${
+      input.status === "1"
+        ? "bg-green-100 text-green-600"
+        : "bg-red-100 text-red-600"
+    }
+  `}
               >
                 {input.status === "1" ? (
                   <>
@@ -237,7 +265,7 @@ const AddCategory = ({ value, onChange }) => {
                 name="description"
                 value={input.description}
                 onChange={handleInput}
-                placeholder="Enter Category Description"
+                placeholder="Enter Sub Category Description"
                 className="w-full px-4 py-2 border border-grey-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               {errors.description && (
@@ -258,7 +286,6 @@ const AddCategory = ({ value, onChange }) => {
                 type="file"
                 name="image"
                 onChange={handleImage}
-                placeholder="Enter Category Serial"
                 className="w-full px-4 py-2 border border-grey-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
               />
 
@@ -280,7 +307,7 @@ const AddCategory = ({ value, onChange }) => {
           </div>
           <div className="flex justify-center mt-6">
             <button
-              onClick={handleCategoryCreate}
+              onClick={handleSubCategoryCreate}
               disabled={loading}
               className={`w-1/2 flex items-center justify-center gap-2 border-2 border-indigo-500 rounded-lg py-2 px-4 text-indigo-600 font-semibold transition duration-200 ease-in-out
       ${loading ? "cursor-not-allowed" : "hover:bg-indigo-500 hover:text-white"}
@@ -289,10 +316,10 @@ const AddCategory = ({ value, onChange }) => {
               {loading ? (
                 <>
                   <FaSpinner className="animate-spin" />
-                  Adding Category...
+                  Adding Sub Category...
                 </>
               ) : (
-                "Add Category"
+                "Add Sub Category"
               )}
             </button>
           </div>
@@ -302,4 +329,4 @@ const AddCategory = ({ value, onChange }) => {
   );
 };
 
-export default AddCategory;
+export default AddSubCategory;
