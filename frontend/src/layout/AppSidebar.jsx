@@ -37,6 +37,14 @@ const navItems = [
     ],
   },
   {
+    name: "Brands",
+    icon: <FiList />,
+    subItems: [
+      { name: "Add Brand", path: "/add-brand", pro: false },
+      { name: "All Brand", path: "/all-brand", pro: false },
+    ],
+  },
+  {
     name: "Tables",
     icon: <FiTable />,
     subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
