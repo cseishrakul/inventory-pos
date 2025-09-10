@@ -3,8 +3,13 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\DivisionController;
 use App\Http\Controllers\SubCategoryController;
+use App\Manager\ScriptManager;
 use Illuminate\Support\Facades\Route;
+
+
+Route::get('test',[ScriptManager::class,'getLocationData']);
 
 Route::post('login',[AuthController::class,'login']);
 
