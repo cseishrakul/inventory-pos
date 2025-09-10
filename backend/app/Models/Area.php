@@ -9,4 +9,8 @@ class Area extends Model
 {
     use HasFactory;
     protected $guarded = [];
+    public function getAreaByDistrictId(int $id)
+    {
+        return self::query()->select('id as value', 'name as label')->where('district_id',$id)->get();
+    }
 }

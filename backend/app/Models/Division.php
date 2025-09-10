@@ -7,7 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Division extends Model
 {
-    /** @use HasFactory<\Database\Factories\DivisionFactory> */
     use HasFactory;
     protected $guarded = [];
+
+    public function getDivisionList(){
+        return self::query()->select('id','name')->get();
+    }
+
+
 }

@@ -22,6 +22,9 @@ import EditSubCategory from "../pages/category/subCategory/EditSubCategory";
 import AddBrand from "../pages/brand/AddBrand";
 import AllBrand from "../pages/brand/AllBrand";
 import EditBrand from "../pages/brand/EditBrand";
+import AddSupplier from "../pages/supplier/AddSupplier";
+import AllSupplier from "../pages/supplier/AllSupplier";
+import EditSuppllier from "../pages/supplier/EditSuppllier";
 
 const ProtectedRouter = () => (
   <Routes>
@@ -53,6 +56,11 @@ const ProtectedRouter = () => (
       <Route path="/add-brand" element={<AddBrand />} />
       <Route path="/all-brand" element={<AllBrand />} />
       <Route path="/edit-brand/:id" element={<EditBrand />} />
+      
+      {/* Supplier */}
+      <Route path="/add-supplier" element={<AddSupplier />} />
+      <Route path="/all-supplier" element={<AllSupplier />} />
+      <Route path="/edit-supplier/:id" element={<EditSuppllier />} />
     </Route>
     <Route path="*" element={<NotFound />} />
   </Routes>

@@ -12,6 +12,8 @@ import {
   FiPieChart,
   FiTable,
   FiUser,
+  FiUsers,
+  FiBookmark,
 } from "react-icons/fi";
 import { LuPlug2 } from "react-icons/lu";
 
@@ -38,10 +40,18 @@ const navItems = [
   },
   {
     name: "Brands",
-    icon: <FiList />,
+    icon: <FiBookmark />,
     subItems: [
       { name: "Add Brand", path: "/add-brand", pro: false },
       { name: "All Brand", path: "/all-brand", pro: false },
+    ],
+  },
+  {
+    name: "Suppliers",
+    icon: <FiUsers />,
+    subItems: [
+      { name: "Add Supplier", path: "/add-supplier", pro: false },
+      { name: "All Supplier", path: "/all-supplier", pro: false },
     ],
   },
   {

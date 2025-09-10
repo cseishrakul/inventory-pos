@@ -11,9 +11,10 @@ class AreaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(int $id)
     {
-        //
+        $areas = (new Area())->getAreaByDistrictId($id);
+        return response()->json($areas);
     }
 
     /**

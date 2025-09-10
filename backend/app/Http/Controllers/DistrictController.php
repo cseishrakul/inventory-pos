@@ -11,9 +11,10 @@ class DistrictController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(int $id)
     {
-        //
+        $districts = (new District())->getDistrictByDivisionId($id);
+        return response()->json($districts);
     }
 
     /**
