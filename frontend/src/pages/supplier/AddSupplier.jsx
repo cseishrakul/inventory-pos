@@ -128,7 +128,7 @@ const AddSupplier = ({ value, onChange }) => {
     <>
       <PageMeta
         title="Add Supplier | Dashboard"
-        description="Add a new supplier with full details"
+        details="Add a new supplier with full details"
       />
       <PageBreadcrumb pageTitle={"Add Supplier"} />
 
@@ -214,15 +214,15 @@ const AddSupplier = ({ value, onChange }) => {
             {/* House/Road/Village */}
             <input
               type="text"
-              name="address_line"
-              value={input.address_line}
+              name="address"
+              value={input.address}
               onChange={handleInput}
               placeholder="House / Road / Village"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            {errors.address_line && (
+            {errors.address && (
               <p className="mt-2 text-sm text-red-500 font-medium flex items-center gap-1">
-                <CiWarning /> {errors.address_line[0]}
+                <CiWarning /> {errors.address[0]}
               </p>
             )}
 
@@ -296,7 +296,7 @@ const AddSupplier = ({ value, onChange }) => {
             )}
           </div>
 
-          {/* Details and Logo */}
+          {/* details and Logo */}
           <div className="flex gap-10">
             <div className="w-1/2">
               <label className="block text-md font-medium text-gray-700 mb-1">
