@@ -24,7 +24,7 @@ import AllBrand from "../pages/brand/AllBrand";
 import EditBrand from "../pages/brand/EditBrand";
 import AddSupplier from "../pages/supplier/AddSupplier";
 import AllSupplier from "../pages/supplier/AllSupplier";
-import EditSuppllier from "../pages/supplier/EditSuppllier";
+import EditSupplier from "../pages/supplier/EditSupplier";
 
 const ProtectedRouter = () => (
   <Routes>
@@ -60,7 +60,7 @@ const ProtectedRouter = () => (
       {/* Supplier */}
       <Route path="/add-supplier" element={<AddSupplier />} />
       <Route path="/all-supplier" element={<AllSupplier />} />
-      <Route path="/edit-supplier/:id" element={<EditSuppllier />} />
+      <Route path="/edit-supplier/:id" element={<EditSupplier />} />
     </Route>
     <Route path="*" element={<NotFound />} />
   </Routes>

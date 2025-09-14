@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PageMeta from "../../components/common/PageMeta";
 import PageBreadcrumb from "../../components/common/PageBreadCrumb";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useParams } from "react-router";
 import axios from "axios";
 import { laravel_base_url, react_base_url } from "../../router/http";
 import { FaSpinner } from "react-icons/fa";
@@ -10,7 +10,8 @@ import Swal from "sweetalert2";
 
 import { MdToggleOn, MdToggleOff } from "react-icons/md";
 
-const AddSupplier = ({ value, onChange }) => {
+const EditSupplier = ({ value, onChange }) => {
+  const params = useParams();
   const [input, setInput] = useState({ status: "0" });
   const [status, setStatus] = useState("0");
   const [errors, setErrors] = useState([]);
@@ -21,6 +22,13 @@ const AddSupplier = ({ value, onChange }) => {
   const [divisions, setDivisions] = useState([]);
   const [districts, setDistricts] = useState([]);
   const [areas, setAreas] = useState([]);
+  const getSupplier = () => {
+    axios.get(laravel_base_url + `supplier/${params.id}`).then((res) => {
+      setInput(res.data.data);
+      getDistricts(res.data.data.division_id);
+      getAreas(res.data.data.district_id);
+    });
+  };
 
   const getDivisions = () => {
     axios.get(laravel_base_url + "divisions").then((res) => {
@@ -92,11 +100,11 @@ const AddSupplier = ({ value, onChange }) => {
     }
   };
 
-  const handleSupplierCreate = (e) => {
+  const handleSupplierUpdate = (e) => {
     e.preventDefault();
     setLoading(true);
     axios
-      .post(laravel_base_url + "supplier", input)
+      .put(laravel_base_url + `supplier/${params.id}`, input)
       .then((res) => {
         setLoading(false);
         Swal.fire({
@@ -124,19 +132,20 @@ const AddSupplier = ({ value, onChange }) => {
 
   useEffect(() => {
     getDivisions();
+    getSupplier();
   }, []);
 
   return (
     <>
       <PageMeta
-        title="Add Supplier | Dashboard"
-        details="Add a new supplier with full details"
+        title="Edit Supplier | Dashboard"
+        details="Edit supplier with full details"
       />
-      <PageBreadcrumb pageTitle={"Add Supplier"} />
+      <PageBreadcrumb pageTitle={"Edit Supplier"} />
 
       <div className="border-2 border-indigo-500 rounded-lg p-10 space-y-6">
         <div className="flex items-center justify-between">
-          <h5 className="text-xl font-semibold">Add Supplier</h5>
+          <h5 className="text-xl font-semibold">Edit Supplier</h5>
           <Link
             to="/all-supplier"
             className="text-indigo-800 outline-2 outline-indigo-500 p-1 px-2 rounded-md hover:bg-indigo-500 hover:text-white"
@@ -328,9 +337,9 @@ const AddSupplier = ({ value, onChange }) => {
                 onChange={handleLogo}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
               />
-              {input.logo && (
+              {input.display_logo && (
                 <img
-                  src={input.logo}
+                  src={input.display_logo}
                   alt="Logo"
                   className="w-50 mt-3 rounded-lg"
                 />
@@ -377,7 +386,7 @@ const AddSupplier = ({ value, onChange }) => {
           {/* Submit */}
           <div className="flex justify-center mt-6">
             <button
-              onClick={handleSupplierCreate}
+              onClick={handleSupplierUpdate}
               disabled={loading}
               className={`w-1/2 flex items-center justify-center gap-2 border-2 border-indigo-500 rounded-lg py-2 px-4 text-indigo-600 font-semibold transition duration-200 ease-in-out ${
                 loading
@@ -388,10 +397,10 @@ const AddSupplier = ({ value, onChange }) => {
               {loading ? (
                 <>
                   <FaSpinner className="animate-spin" />
-                  Adding Supplier...
+                  Updating Supplier...
                 </>
               ) : (
-                "Add Supplier"
+                "Update Supplier"
               )}
             </button>
           </div>
@@ -401,4 +410,4 @@ const AddSupplier = ({ value, onChange }) => {
   );
 };
 
-export default AddSupplier;
+export default EditSupplier;

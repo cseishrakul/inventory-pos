@@ -5,18 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Supplier;
 use App\Http\Requests\StoreSupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
+use App\Http\Resources\SupplierEditResource;
+use App\Http\Resources\SupplierListResource;
 use Illuminate\Support\Str;
 use App\Manager\ImageUploadManager;
 use App\Models\Address;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SupplierController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $suppliers = (new Supplier())->getSupplierList($request->all());
+        return SupplierListResource::collection($suppliers);
     }
 
     /**
@@ -36,7 +41,7 @@ class SupplierController extends Controller
         $address = (new Address())->prepareData($request->all());
 
         if ($request->has('logo')) {
-            $name = Str::slug($supplier['name'].now());
+            $name = Str::slug($supplier['name'] . now());
             $supplier['logo'] =
                 ImageUploadManager::processImageUpload(
                     $request->input('logo'),
@@ -50,10 +55,21 @@ class SupplierController extends Controller
                 );
         }
 
-        $supplier = Supplier::create($supplier);
-        $supplier->address()->create($address);
-
-        return response()->json(['msg' => 'Supplier Added Successfully!', 'cls' => 'success']);
+        try {
+            DB::beginTransaction();
+            $supplier = Supplier::create($supplier);
+            $supplier->address()->create($address);
+            DB::commit();
+             return response()->json(['msg' => 'Supplier Added Successfully!', 'cls' => 'success']);
+        } catch (\Throwable $e) {
+            if (isset($supplier['logo'])) {
+                ImageUploadManager::deletePhoto(Supplier::IMAGE_UPLOAD_PATH, $supplier['logo']);
+                ImageUploadManager::deletePhoto(Supplier::THUMB_IMAGE_UPLOAD_PATH, $supplier['logo']);
+            }
+            DB::rollBack();
+             return response()->json(['msg' => 'Something went wrong!', 'cls' => 'warning','flag' => true]);
+        }
+       
     }
 
     /**
@@ -61,7 +77,8 @@ class SupplierController extends Controller
      */
     public function show(Supplier $supplier)
     {
-        //
+        $supplier->load('address');
+        return new SupplierEditResource($supplier);
     }
 
     /**
@@ -76,8 +93,37 @@ class SupplierController extends Controller
      * Update the specified resource in storage.
      */
     public function update(UpdateSupplierRequest $request, Supplier $supplier)
-    {
-        //
+     {
+        $supplier_data = (new Supplier())->prepareData($request->all(), auth());
+        $address_data = (new Address())->prepareData($request->all());
+
+        if ($request->has('logo')) {
+            $name = Str::slug($supplier_data['name'] . now());
+            $supplier_data['logo'] =
+                ImageUploadManager::processImageUpload(
+                    $request->input('logo'),
+                    $name,
+                    Supplier::IMAGE_UPLOAD_PATH,
+                    Supplier::LOGO_WIDTH,
+                    Supplier::LOGO_HEIGHT,
+                    Supplier::THUMB_IMAGE_UPLOAD_PATH,
+                    Supplier::LOGO_THUMB_WIDTH,
+                    Supplier::LOGO_THUMB_HEIGHT,
+                    $supplier->logo
+                );
+        }
+
+        try {
+            DB::beginTransaction();
+            $supplier_data = $supplier->update($supplier_data);
+            $supplier->address()->update($address_data);
+            DB::commit();
+             return response()->json(['msg' => 'Supplier Added Successfully!', 'cls' => 'success']);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+             return response()->json(['msg' => 'Something went wrong!', 'cls' => 'warning','flag' => true]);
+        }
+       
     }
 
     /**
@@ -85,6 +131,13 @@ class SupplierController extends Controller
      */
     public function destroy(Supplier $supplier)
     {
-        //
+        if (!empty($supplier->logo)) {
+            ImageUploadManager::deletePhoto(Supplier::IMAGE_UPLOAD_PATH, $supplier['logo']);
+            ImageUploadManager::deletePhoto(Supplier::THUMB_IMAGE_UPLOAD_PATH, $supplier['logo']);
+        }
+        (new Address())->deleteAddressBySupplierId($supplier);
+
+        $supplier->delete();
+        return response()->json(['msg' => 'Supplier Deleted Successfully!', 'cls' => 'warning']);
     }
 }
