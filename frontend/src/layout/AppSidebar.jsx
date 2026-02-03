@@ -55,9 +55,9 @@ const navItems = [
     ],
   },
   {
-    name: "Tables",
+    name: "Attributes",
     icon: <FiTable />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+    subItems: [{ name: "Product Attributes", path: "/product-attributes", pro: false }],
   },
   {
     name: "Pages",
